@@ -276,7 +276,12 @@ struct Sensor
         {
             if (std::isnan(threshold.hysteresis))
             {
-                threshold.hysteresis = hysteresisTrigger;
+                if (!std::isnan(threshold.value)) {
+                    std::cerr << "sensor " << name << ", level " << propertyLevel(threshold.level,
+                                              threshold.direction) << ", alarm " << propertyAlarm(threshold.level,
+                                              threshold.direction) << ", hysteresis is NaN, using hysteresis" << hysteresisTrigger << ", maxvalue " << maxValue << ", minValue " << minValue << "\n";
+                }
+              threshold.hysteresis = hysteresisTrigger;
             }
 
             std::shared_ptr<sdbusplus::asio::dbus_interface> iface =
@@ -284,7 +289,7 @@ struct Sensor
 
             if (!iface)
             {
-                std::cout << "trying to set uninitialized interface\n";
+                std::cout << "sensor " << name << ": trying to set uninitialized interface\n";
                 continue;
             }
 
@@ -295,6 +300,7 @@ struct Sensor
 
             if ((level.empty()) || (alarm.empty()))
             {
+                std::cerr << "sensor " << name << ", level " << level.empty() << ", alarm " << alarm.empty() << "\n";
                 continue;
             }
             size_t thresSize = label.empty() ? thresholds.size()

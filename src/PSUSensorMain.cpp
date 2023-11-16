@@ -441,7 +441,11 @@ static void createSensorsCallback(
                 std::cerr << "error populating total thresholds\n";
             }
             thresholdConfSize = confThresholds.size();
-
+	    if (confThresholds.empty()) {
+                std::cerr << " path " << path.str << " has no thresholds\n";
+	    } else {
+                std::cerr << " path " << path.str << " has thresholds\n";
+	    }
             interfacePath = &path.str;
             break;
         }
@@ -888,6 +892,9 @@ static void createSensorsCallback(
                 std::cerr << "error populating thresholds for "
                           << sensorNameSubStr << "\n";
             }
+	    if (sensorThresholds.empty()) {
+                std::cerr << escapeName(*psuName) << ", labelHead " << labelHead << " has no thresholds\n";
+	    }
 
             auto findSensorUnit = sensorTable.find(sensorNameSubStr);
             if (findSensorUnit == sensorTable.end())

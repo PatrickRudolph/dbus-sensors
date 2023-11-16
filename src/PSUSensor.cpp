@@ -75,6 +75,8 @@ PSUSensor::PSUSensor(const std::string& path, const std::string& objectType,
 
     for (const auto& threshold : thresholds)
     {
+        std::cerr << sensorName << " threshold.level=" << (int)threshold.level << " threshold.direction=" << (int)threshold.direction << " threshold.value=" << (float)threshold.value << "\n";
+
         std::string interface = thresholds::getInterface(threshold.level);
         thresholdInterfaces[static_cast<size_t>(threshold.level)] =
             objectServer.add_interface(dbusPath, interface);

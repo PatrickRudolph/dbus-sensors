@@ -55,8 +55,11 @@ bool parseThresholdsFromConfig(
     {
         if (intf.find("Thresholds") == std::string::npos)
         {
+            std::cerr << "No Thresholds on interface " << intf << "\n";
             continue;
-        }
+        } else {
+            std::cerr << "Thresholds on interface " << intf << ", matchLabel " << matchLabel << ", sensorIndex " << sensorIndex << "\n";
+	}
         if (matchLabel != nullptr)
         {
             auto labelFind = cfg.find("Label");
@@ -118,6 +121,9 @@ bool parseThresholdsFromConfig(
 
         if ((level == Level::ERROR) || (direction == Direction::ERROR))
         {
+            std::cerr << "Level or direction error on configuration interface "
+                      << intf << "\n";
+            std::cerr << "directions " << directions << " severity " << severity << "\n";
             continue;
         }
         double val = std::visit(VariantToDoubleVisitor(), valueFind->second);
@@ -404,6 +410,7 @@ void checkThresholdsPowerDelay(const std::weak_ptr<Sensor>& weakSensor,
     }
 
     Sensor* sensor = sensorPtr.get();
+
     std::vector<ChangeParam> changes = checkThresholds(sensor, sensor->value);
     for (const auto& change : changes)
     {
@@ -425,6 +432,8 @@ void checkThresholdsPowerDelay(const std::weak_ptr<Sensor>& weakSensor,
             {
                 thresholdTimer.startTimer(weakSensor, change.threshold,
                                           change.asserted, change.assertValue);
+                std::cerr << "defer assertThresholds for " << sensor->name << " asserted " << change.asserted << " hysteresis " << change.threshold.hysteresis << " assertvalue " << change.assertValue << "\n";
+
                 continue;
             }
         }
@@ -459,6 +468,7 @@ void assertThresholds(Sensor* sensor, double assertValue,
             // msg.get_path() is interface->get_object_path()
             sdbusplus::message_t msg =
                 interface->new_signal("ThresholdAsserted");
+            std::cerr << "sensor " << sensor->name << " interface " << interface->get_interface_name() << " assert " << assert << "\n";
 
             msg.append(sensor->name, interface->get_interface_name(), property,
                        assert, assertValue);
